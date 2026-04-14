@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel — Portfolio</title>
+    <style>
+        :root {
+            --bg: #05060d;
+            --panel: rgba(16, 18, 33, 0.92);
+            --border: rgba(255, 255, 255, 0.08);
+            --text: #f5f5f5;
+            --muted: #9aa0b8;
+            --accent: #c3b287;
+            --accent-soft: rgba(195, 178, 135, 0.14);
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color-scheme: dark;
+            background: radial-gradient(circle at top left, rgba(195, 178, 135, 0.12), transparent 18%),
+                radial-gradient(circle at bottom right, rgba(120, 128, 255, 0.08), transparent 25%),
+                #05060d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            min-height: 100%;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04), transparent 30%);
+            z-index: -1;
+        }
+
+        .page-container {
+            width: min(980px, 100%);
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background: var(--panel);
+            box-shadow: 0 40px 120px rgba(0, 0, 0, 0.35);
+        }
+
+        .top-label {
+            text-transform: uppercase;
+            letter-spacing: 0.24em;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .page-header {
+            display: grid;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 3vw, 2.8rem);
+            line-height: 1.05;
+        }
+
+        .page-header p {
+            color: var(--muted);
+            line-height: 1.8;
+            max-width: 45rem;
+        }
+
+        .nav-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.12em;
+        }
+
+        .status-message {
+            display: block;
+            margin: 1.5rem 0;
+            padding: 1rem 1.2rem;
+            border-radius: 18px;
+            border: 1px solid rgba(195, 178, 135, 0.18);
+            background: rgba(195, 178, 135, 0.09);
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .form-card {
+            display: grid;
+            gap: 1.5rem;
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        label {
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            padding: 0.85rem 1rem;
+        }
+
+        .submit-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        button {
+            border: none;
+            border-radius: 14px;
+            padding: 1rem 1.8rem;
+            background: linear-gradient(135deg, var(--accent), #d4b86f);
+            color: var(--bg);
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.05);
+        }
+
+        .response {
+            min-height: 2rem;
+            color: #bce0fd;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 720px) {
+            body {
+                padding: 1rem;
+            }
+
+            .page-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-label">Private Admin Panel</div>
+        <div class="page-header">
+            <a class="nav-link" href="Madhavhridul.html">← Back to Public Portfolio</a>
+            <h1>Hidden Admin</h1>
+            <p>This page is only for you. Enter the admin password, then add new projects with title, category, description, and file upload. The form sends data to your Google Apps Script / API endpoint.</p>
+        </div>
+
+        <div id="authStatus" class="status-message">Waiting for admin authentication…</div>
+
+        <div id="adminPanel" class="form-card hidden">
+            <form id="projectForm">
+                <div>
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" placeholder="Project title" required />
+                </div>
+                <div>
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="photography">Photography</option>
+                        <option value="films">Films</option>
+                        <option value="designs">Designs</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Short description"></textarea>
+                </div>
+                <div>
+                    <label for="file">Project file</label>
+                    <input type="file" id="file" name="file" accept="image/*,video/*" required />
+                </div>
+                <div class="submit-row">
+                    <button type="submit">Submit Project</button>
+                </div>
+            </form>
+            <div id="response" class="response"></div>
+        </div>
+    </div>
+    <script src="js/admin.js"></script>
+</body>
+</html>

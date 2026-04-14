@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Films — Hridul Madhav</title>
+    <style>
+        :root {
+            --bg-primary: #05060d;
+            --bg-secondary: #0d0e19;
+            --bg-tertiary: rgba(13, 14, 25, 0.88);
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --border: rgba(255,255,255,0.08);
+            --text-primary: #f5f5f5;
+            --text-secondary: #d7d7d7;
+            --text-tertiary: #c7c7c7;
+            --accent: #c3b287;
+            --accent-dark: #d4b86f;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            
+            color-scheme: dark;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        html[data-theme="light"] {
+            --bg-primary: #fafafa;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #fff;
+            --bg-card: rgba(0, 0, 0, 0.03);
+            --border: rgba(0, 0, 0, 0.08);
+            --text-primary: #1a1a1a;
+            --text-secondary: #3a3a3a;
+            --text-tertiary: #555;
+            --accent: #a88c4a;
+            --accent-dark: #94794a;
+            --text-muted: rgba(0, 0, 0, 0.55);
+            
+            color-scheme: light;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            min-height: 100%;
+            background: var(--bg-primary);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            padding: 2rem;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(115, 92, 200, 0.12), transparent 18%),
+                radial-gradient(circle at 80% 25%, rgba(216, 180, 99, 0.08), transparent 18%),
+                linear-gradient(180deg, rgba(10, 12, 22, 0.88), rgba(5, 6, 13, 0.92));
+            z-index: -2;
+            animation: drift 12s ease-in-out infinite alternate;
+            transition: background 0.3s ease;
+        }
+
+        html[data-theme="light"] body::before {
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(168, 140, 74, 0.06), transparent 25%),
+                radial-gradient(circle at 80% 25%, rgba(168, 140, 74, 0.04), transparent 25%),
+                linear-gradient(180deg, rgba(250, 250, 250, 1), rgba(245, 245, 245, 0.95));
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 30%);
+            z-index: -1;
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0px) scale(1); }
+            to { transform: translateY(-10px) scale(1.02); }
+        }
+
+        .page-container {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-label {
+            font-size: 0.85rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .page-header {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .header-content h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+
+        .header-content p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 50rem;
+            animation: fadeIn 1s ease 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .film-card {
+            display: grid;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            cursor: pointer;
+            group: "film-card";
+        }
+
+        .film-thumbnail {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.45s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .film-thumbnail img,
+        .film-thumbnail video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.45s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .film-card:hover .film-thumbnail {
+            border-color: var(--accent);
+            box-shadow: 0 32px 60px rgba(0, 0, 0, 0.35);
+            transform: translateY(-4px);
+        }
+
+        .film-card:hover .film-thumbnail img,
+        .film-card:hover .film-thumbnail video {
+            transform: scale(1.04);
+        }
+
+        .play-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.45s cubic-bezier(0.2, 0, 0.2, 1);
+            backdrop-filter: blur(2px);
+        }
+
+        .film-card:hover .play-icon {
+            opacity: 1;
+        }
+
+        .play-button {
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            font-size: 24px;
+            transform: scale(0.8);
+            transition: transform 0.45s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        .film-card:hover .play-button {
+            transform: scale(1);
+        }
+
+        .film-info {
+            display: grid;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .film-title {
+            font-size: 1.3rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+
+        .film-card:hover .film-title {
+            color: var(--accent);
+        }
+
+        .film-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            background: rgba(195, 178, 135, 0.08);
+            padding: 0.3rem 0.7rem;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        html[data-theme="light"] .film-category {
+            background: rgba(168, 140, 74, 0.08);
+        }
+
+        .film-description {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-tertiary);
+        }
+
+        /* Detail Modal */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 3rem;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.45s cubic-bezier(0.2, 0, 0.2, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 40px;
+            height: 40px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--accent);
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            border-color: var(--accent);
+            background: rgba(195, 178, 135, 0.1);
+        }
+
+        .modal-video {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 2.2rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .modal-concept {
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .modal-description {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .modal-credits {
+            display: grid;
+            gap: 1rem;
+            padding: 1.5rem 0;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            margin: 2rem 0;
+        }
+
+        .credit-item {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 2rem;
+        }
+
+        .credit-role {
+            font-size: 0.85rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .credit-name {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .modal-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .modal-link:hover {
+            border-color: var(--accent);
+            background: rgba(195, 178, 135, 0.08);
+        }
+
+        html[data-theme="light"] .modal-link:hover {
+            background: rgba(168, 140, 74, 0.08);
+        }
+
+        /* Add Film Section */
+        .add-film-section {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .add-film-card {
+            display: grid;
+            gap: 2rem;
+            padding: 2.5rem;
+            border: 2px dashed var(--border);
+            border-radius: 28px;
+            background: rgba(195, 178, 135, 0.02);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        html[data-theme="light"] .add-film-card {
+            background: rgba(168, 140, 74, 0.02);
+        }
+
+        .add-film-card:hover {
+            border-color: var(--accent);
+            background: rgba(195, 178, 135, 0.06);
+        }
+
+        html[data-theme="light"] .add-film-card:hover {
+            background: rgba(168, 140, 74, 0.06);
+        }
+
+        .add-film-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+
+        .add-film-text h3 {
+            font-size: 1.3rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .add-film-text p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .btn-add-film {
+            align-self: center;
+            padding: 0.85rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-film:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(195, 178, 135, 0.25);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .theme-toggle .sun {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        .theme-toggle .moon {
+            opacity: 0;
+            transform: rotate(-180deg);
+            position: absolute;
+        }
+
+        html[data-theme="light"] .theme-toggle .sun {
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        html[data-theme="light"] .theme-toggle .moon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header-content h1 {
+                font-size: 2rem;
+            }
+
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                width: 44px;
+                height: 44px;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                border-radius: 20px;
+            }
+
+            .modal-title {
+                font-size: 1.6rem;
+            }
+
+            .credit-item {
+                grid-template-columns: 100px 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+        <svg class="sun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="page-container">
+        <div class="top-label">Portfolio</div>
+
+        <section class="page-header">
+            <div class="header-content">
+                <a href="Madhavhridul.html" class="nav-link">← Back to Portfolio</a>
+                <h1>Films</h1>
+                <p>A collection of moving narratives exploring time, perception, and story through motion, rhythm, and visual language.</p>
+            </div>
+        </section>
+
+        <section class="projects-grid" id="projects" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <!-- Film cards will be rendered here -->
+        </section>
+
+    </div>
+
+    <!-- Film Detail Modal -->
+    <div class="modal" id="filmModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+            
+            <video class="modal-video" id="modalVideo" controls></video>
+            
+            <h2 class="modal-title" id="modalTitle"></h2>
+            <p class="modal-concept" id="modalConcept"></p>
+            <p class="modal-description" id="modalDescription"></p>
+            
+            <div class="modal-credits" id="modalCredits"></div>
+            
+            <div class="modal-links" id="modalLinks"></div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Load films projects when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects('films');
+        });
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>

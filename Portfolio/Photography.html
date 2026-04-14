@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photography — Hridul Madhav</title>
+    <style>
+        :root {
+            --bg-primary: #05060d;
+            --bg-secondary: #0d0e19;
+            --bg-tertiary: rgba(13, 14, 25, 0.88);
+            --bg-card: rgba(255, 255, 255, 0.04);
+            --border: rgba(255,255,255,0.08);
+            --text-primary: #f5f5f5;
+            --text-secondary: #d7d7d7;
+            --text-tertiary: #c7c7c7;
+            --accent: #c3b287;
+            --accent-dark: #d4b86f;
+            --text-muted: rgba(255, 255, 255, 0.55);
+            
+            color-scheme: dark;
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        html[data-theme="light"] {
+            --bg-primary: #fafafa;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #fff;
+            --bg-card: rgba(0, 0, 0, 0.03);
+            --border: rgba(0, 0, 0, 0.08);
+            --text-primary: #1a1a1a;
+            --text-secondary: #3a3a3a;
+            --text-tertiary: #555;
+            --accent: #a88c4a;
+            --accent-dark: #94794a;
+            --text-muted: rgba(0, 0, 0, 0.55);
+            
+            color-scheme: light;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            min-height: 100%;
+            background: var(--bg-primary);
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            padding: 2rem;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(115, 92, 200, 0.12), transparent 18%),
+                radial-gradient(circle at 80% 25%, rgba(216, 180, 99, 0.08), transparent 18%),
+                linear-gradient(180deg, rgba(10, 12, 22, 0.88), rgba(5, 6, 13, 0.92));
+            z-index: -2;
+            animation: drift 12s ease-in-out infinite alternate;
+            transition: background 0.3s ease;
+        }
+
+        html[data-theme="light"] body::before {
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(168, 140, 74, 0.06), transparent 25%),
+                radial-gradient(circle at 80% 25%, rgba(168, 140, 74, 0.04), transparent 25%),
+                linear-gradient(180deg, rgba(250, 250, 250, 1), rgba(245, 245, 245, 0.95));
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 30%);
+            z-index: -1;
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0px) scale(1); }
+            to { transform: translateY(-10px) scale(1.02); }
+        }
+
+        .page-container {
+            width: min(1200px, 100%);
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-label {
+            font-size: 0.85rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .page-header {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .header-content h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            margin-bottom: 1rem;
+        }
+
+        .header-content p {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            max-width: 50rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .projects-section {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .project-card {
+            display: grid;
+            gap: 1.5rem;
+            padding: 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            background: var(--bg-tertiary);
+            transition: all 0.35s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top, rgba(196, 176, 128, 0.14), transparent 52%);
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            pointer-events: none;
+        }
+
+        .project-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            box-shadow: 0 32px 60px rgba(0, 0, 0, 0.25);
+        }
+
+        html[data-theme="light"] .project-card:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-header {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .project-title {
+            font-size: 1.6rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        .project-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            background: rgba(195, 178, 135, 0.08);
+            padding: 0.4rem 0.8rem;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        html[data-theme="light"] .project-category {
+            background: rgba(168, 140, 74, 0.08);
+        }
+
+        .project-description {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .project-images {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .project-image {
+            width: 100%;
+            height: 240px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .project-image:hover {
+            transform: scale(1.02);
+        }
+
+        .project-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .project-link:hover {
+            border-color: var(--accent);
+            background: rgba(195, 178, 135, 0.08);
+        }
+
+        html[data-theme="light"] .project-link:hover {
+            background: rgba(168, 140, 74, 0.08);
+        }
+
+        .add-project-section {
+            display: grid;
+            gap: 2rem;
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .add-project-card {
+            display: grid;
+            gap: 2rem;
+            padding: 2.5rem;
+            border: 2px dashed var(--border);
+            border-radius: 28px;
+            background: rgba(195, 178, 135, 0.02);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        html[data-theme="light"] .add-project-card {
+            background: rgba(168, 140, 74, 0.02);
+        }
+
+        .add-project-card:hover {
+            border-color: var(--accent);
+            background: rgba(195, 178, 135, 0.06);
+        }
+
+        html[data-theme="light"] .add-project-card:hover {
+            background: rgba(168, 140, 74, 0.06);
+        }
+
+        .add-project-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+
+        .add-project-text h3 {
+            font-size: 1.3rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .add-project-text p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .btn-add-project {
+            align-self: center;
+            padding: 0.85rem 2rem;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            color: var(--bg-primary);
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-add-project:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(195, 178, 135, 0.25);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            backdrop-filter: blur(16px);
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--accent);
+            background: var(--bg-tertiary);
+            transform: scale(1.05);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--accent);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .theme-toggle .sun {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        .theme-toggle .moon {
+            opacity: 0;
+            transform: rotate(-180deg);
+            position: absolute;
+        }
+
+        html[data-theme="light"] .theme-toggle .sun {
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        html[data-theme="light"] .theme-toggle .moon {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header-content h1 {
+                font-size: 2rem;
+            }
+
+            .project-card {
+                padding: 1.5rem;
+            }
+
+            .theme-toggle {
+                top: 1rem;
+                right: 1rem;
+                width: 44px;
+                height: 44px;
+            }
+
+            .project-title {
+                font-size: 1.3rem;
+            }
+
+            .project-meta {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+        <svg class="sun" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="page-container">
+        <div class="top-label">Portfolio</div>
+
+        <section class="page-header">
+            <div class="header-content">
+                <a href="Madhavhridul.html" class="nav-link">← Back to Portfolio</a>
+                <h1>Photography</h1>
+                <p>A slow, deliberate world of light, gesture, and stillness. Each project captures time, emotion, and the subtle narratives within a single frame.</p>
+            </div>
+        </section>
+
+        <section id="projects" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <!-- Projects will be loaded here -->
+        </section>
+            <!-- Projects will be rendered here -->
+        </section>
+
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Load photography projects when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects('photography');
+        });
+    </script>
+</body>
+</html>
